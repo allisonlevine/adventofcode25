@@ -1,40 +1,39 @@
-List<String> x = File.ReadAllLines("finalpassword.txt").ToList();
- 
-List<Tuple<string, int>> list = new();
- 
-list = x.Select(x => new Tuple<string, int>(x.Substring(0,1), int.Parse(x.Substring(1)))).ToList();
- 
-int password = 0;
-int counter = 50;
-int password2 = 0;
-int counter2 = 50;
-foreach (var item in list) {
-    if (item.Item1 == "L")
+string filePath = @"thtpath.txt";
+
+var instructions = File.ReadAllLines(filePath)
+                       .Select(line => (
+                           Direction: line[0],
+                           Distance: int.Parse(line.Substring(1))
+                       ))
+                       .ToList();
+
+int currentPos1 = 50;
+int currentPos2 = 50;
+
+int endPointMatches = 0;
+int pathMatches = 0;
+
+foreach (var move in instructions)
+{
+    int stepDirection = (move.Direction == 'L') ? -1 : 1;
+
+    currentPos1 += (stepDirection * move.Distance);
+
+    if (currentPos1 % 100 == 0)
     {
-        counter -= item.Item2;
-        for (int i = 0; i < item.Item2; i++) { 
-            counter2 -= 1;
-            if (counter2 % 100 == 0) {
-                password2++;
-            }
-        }
+        endPointMatches++;
     }
-    else { 
-        counter += item.Item2;
-        for (int i = 0; i < item.Item2; i++)
+
+    for (int i = 0; i < move.Distance; i++)
+    {
+        currentPos2 += stepDirection;
+
+        if (currentPos2 % 100 == 0)
         {
-            counter2 += 1;
-            if (counter2 % 100 == 0)
-            {
-                password2++;
-            }
+            pathMatches++;
         }
-    }
-    if (counter % 100 == 0) { 
-        password++;
     }
 }
- 
- 
-Console.WriteLine(password);
-Console.WriteLine(password2);
+
+Console.WriteLine(endPointMatches); 
+Console.WriteLine(pathMatches);    
